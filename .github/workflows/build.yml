@@ -1,0 +1,107 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build Bulma 4 Hugo
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BULMA_URL: "https://api.github.com/repos/jgthms/bulma"
+    permissions:
+      contents: write
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a set of commands using the runners shell
+      - name: Configure Git
+        run: |
+          git config --local core.autocrlf "false"
+          git config --local user.name ${{ secrets.GH_USER_NAME }}
+          git config --global user.email ${{ secrets.GH_USER_MAIL }}
+          git fetch --tags
+      - name: Prepare repository
+        run: |
+          # cleanup rubbish from the past
+          Remove-Item -Recurse .\assets -ErrorAction SilentlyContinue
+          Remove-Item -Recurse .\.github -ErrorAction SilentlyContinue
+          Remove-Item .\.gitignore -ErrorAction SilentlyContinue
+          [void](Test-Path .\assets -ErrorAction Stop)
+          [void](Test-Path .\.github  -ErrorAction Stop)
+          [void](Test-Path .\.gitignore  -ErrorAction Stop)
+
+      - name: Download Bulma
+        run: |
+          $Tags = git tag
+          Write-Output "Known Bulma tags:"
+          $tags | Format-Table | Out-Host
+          # get list of Bulma Releases
+          $BulmaReleases = Invoke-RestMethod -FollowRelLink -Uri "$($Env:BULMA_URL)/releases?per_page=100" | %{$_}| ForEach-Object {
+            if ($_.tag_name -and (-Not ($_.draft -and $_.prerelease))) {
+               [PSCustomObject]@{
+                  release = [version]$_.tag_name
+                  known = [bool]$($Tags -contains $_.tag_name)
+                  archive = [string]$_.assets.name
+                  download = [string]$_.assets.browser_download_url
+               }
+            }
+          } | Sort-Object -Property release 
+           Write-Output "All BULMA Releases"
+           $BulmaReleases | FT | Out-Host
+           $BulmaRelease = $BulmaReleases | Where-Object { -Not $_.known } | Select-Object -First 1
+          if ($BulmaRelease) {
+            Write-Output "Downloading Bulma $($BulmaRelease.release)"
+            Invoke-WebRequest -Uri $BulmaRelease.download -OutFile $BulmaRelease.archive
+            [void](Test-Path $BulmaRelease.archive -ErrorAction Stop)
+            $bulmaFolder = (Get-Item $BulmaRelease.archive).Basename
+
+            [void](New-Item -Type Directory ./assets -ErrorAction Stop)
+            [void](Test-Path .\assets -PathType Container -ErrorAction Stop)
+            Expand-Archive -LiteralPath $BulmaRelease.archive -DestinationPath .\assets
+            if (Test-Path .\assets\__MACOSX) { Remove-Item .\assets\__MACOSX -ErrorAction SilentlyContinue -Recurse }
+            Rename-Item .\assets\$bulmaFolder "bulma"
+            [void](Test-Path ./assets/bulma -PathType Container -ErrorAction Stop)
+            if ((Get-ChildItem .\assets).Count -ne 1) {
+               Write-Error "Unknown Bulma archive content found (expected 'bulma' only):"
+               Get-ChildItem .\assets | Out-Host
+               Write-Error "Aborting - please check"
+            }
+            Remove-Item $BulmaRelease.archive -ErrorAction SilentlyContinue
+            [void](Test-Path $BulmaRelease.archive -ErrorAction Stop)
+            echo "BULMA_RELEASE=$($BulmaRelease.release)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
+            echo "BULMA_ARCHIVE=$($BulmaRelease.archive)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
+            Write-Output "download successful: $($BulmaRelease.archive)"
+          } else {
+            Write-Output "No new Bulma Version found to pack"
+          }
+      - name: Create Release
+        if: ${{ env.BULMA_RELEASE }}
+        run: |
+          Write-Host "Creating Release for $ENV:BULMA_RELEASE : $ENV:BULMA_ARCHIVE"
+          $BulmaRelease = "$ENV:BULMA_RELEASE"
+          $BulmaArchive = "$ENV:BULMA_ARCHIVE"
+          $cwd = ($pwd.Path -replace "\\","\\") + "\\"
+          (Get-ChildItem .).FullName -replace $cwd, ""|sort
+          $bulmaBranch = "bulma-$BulmaRelease"
+          git checkout -b $bulmaBranch
+          git add assets .github
+          git commit -m "pack Bulma $BulmaRelease for Hugo"
+          git push --set-upstream origin $bulmaBranch
+          # git tag -a "$BulmaRelease" -m "packed Bulma release $BulmaRelease"
+          # git push --tags
+          git checkout main
+          gh auth login
+          gh release create $BulmaRelease --title "Bulma4Hugo v$BulmaRelease" --target $bulmaBranch
+          git branch -D $bulmaBranch
+          git push origin --delete $bulmaBranch
