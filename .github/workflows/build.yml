@@ -31,6 +31,7 @@ jobs:
           git config --local user.name ${{ secrets.GH_USER_NAME }}
           git config --global user.email ${{ secrets.GH_USER_MAIL }}
           git fetch --tags
+
       - name: Prepare repository
         run: |
           # cleanup rubbish from the past
@@ -40,6 +41,7 @@ jobs:
           [void](Test-Path .\assets -ErrorAction Stop)
           [void](Test-Path .\.github  -ErrorAction Stop)
           [void](Test-Path .\.gitignore  -ErrorAction Stop)
+
       - name: Download Bulma
         run: |
           $Tags = git tag | %{ $_ -replace "^v","" }
@@ -84,7 +86,8 @@ jobs:
           } else {
             Write-Output "No new Bulma Version found to pack"
           }
-         throw "OOPS"
+          throw "OOPS"
+
       - name: Create Release
         if: ${{ env.BULMA_RELEASE }}
         run: |
