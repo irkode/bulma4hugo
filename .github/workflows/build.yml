@@ -82,9 +82,27 @@ jobs:
             echo "BULMA_RELEASE=$($BulmaRelease.release)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             echo "BULMA_ARCHIVE=$($BulmaRelease.archive)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             Write-Output "download successful: $($BulmaRelease.archive)"
+            
+            $path = (($pwd.Path -replace "\\","\\") + "\\assets\\bulma\\") -replace "[.]","\."
+            $css = $((Get-ChildItem $path -filter "*.css" -recurse ).FullName -replace $path | %{ "  - $_"})
+            $sass = $((Get-ChildItem $path -filter "*.sass").FullName -replace $path)
+            $notes = @"
+               ## This release contains the following style files:
+
+               - CSS
+
+               "@ + ((Get-ChildItem $path -filter "*.css" -recurse ).FullName -replace $path | %{ "  - $_"}) -join "\n") + 
+               "@
+               
+               - SASS
+
+               "@ + ((Get-ChildItem $path -filter "*.sass").FullName -replace $path) | %{ "  - $_"}) -join "\n") 
+            } | Set-Content -encoding UTF-8 notes.md
+            Get-Content notes.md
           } else {
             Write-Output "No new Bulma Version found to pack"
           }
+         throw "OOPS"
       - name: Create Release
         if: ${{ env.BULMA_RELEASE }}
         run: |
