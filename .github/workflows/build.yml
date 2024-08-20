@@ -43,7 +43,7 @@ jobs:
 
       - name: Download Bulma
         run: |
-          $Tags = git tag
+          $Tags = git tag | %{ $_ -replace "^v","" }
           Write-Output "Known Bulma tags:"
           $tags | Format-Table | Out-Host
           # get list of Bulma Releases
@@ -98,7 +98,7 @@ jobs:
           git add assets .github
           git commit -m "pack Bulma $BulmaRelease for Hugo"
           git push --set-upstream origin $bulmaBranch
-          # git tag -a "$BulmaRelease" -m "packed Bulma release $BulmaRelease"
+          # git tag -a "v$BulmaRelease" -m "packed Bulma release $BulmaRelease"
           # git push --tags
           git checkout main
           gh auth login
