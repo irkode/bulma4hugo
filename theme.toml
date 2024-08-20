@@ -1,0 +1,20 @@
+name = 'Bulma 4 Hugo'
+license = 'MIT'
+licenselink = 'https://github.com/irkode/bulma4hugo/LICENSE'
+description = 'Bulma releases packaged for use with Hugo as module or using git.'
+
+homepage = 'https://github.com/irkode/bulma4hugo'
+
+authors = [
+  {name = 'Irkode', homepage = 'https://www.irkdode.de'},
+  {name = 'Name of author', homepage = 'Website of author'}
+]
+[author]
+  name = 'Irkode'
+  homepage = 'https://www.irkdode.de'
+
+# Not really a port, but this is origin the packed data is from
+[original]
+  author = 'Jeremy Thomas (jgthms)'
+  homepage = 'https://bulma.io/'
+  repo = 'https://github.com/jgthms/bulma'
