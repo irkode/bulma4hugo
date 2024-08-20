@@ -83,11 +83,12 @@ jobs:
             echo "BULMA_RELEASE=$($BulmaRelease.release)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             echo "BULMA_ARCHIVE=$($BulmaRelease.archive)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             Write-Output "download successful: $($BulmaRelease.archive)"
-            $path = (($pwd.Path -replace "\\","\\") + "\\assets\\bulma\\") -replace "[.]","\."
+            $BulmaPath = Join-Path -Path $pwd.Path -ChildPath "assets\bulma\"
+            $path = $BulmaPath -replace "\\","\\"
             "## This release contains the following style files:\n\n- CSS\n\n" | Set-Content -encoding utf8 notes.md 
-            (Get-ChildItem -Path $path -filter "*.css" -recurse).FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
+            (Get-ChildItem -Path $BulmaPath -filter "*.css" -recurse).FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
             "\n- SASS\n\n" | Add-Content -encoding utf8 notes.md 
-            (Get-ChildItem -Path $path -filter "*.sass").FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
+            (Get-ChildItem -Path $BulmaPath -filter "*.sass").FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
             Get-Content notes.md
           } else {
             Write-Output "No new Bulma Version found to pack"
