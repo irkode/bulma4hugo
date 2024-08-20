@@ -40,7 +40,6 @@ jobs:
           [void](Test-Path .\assets -ErrorAction Stop)
           [void](Test-Path .\.github  -ErrorAction Stop)
           [void](Test-Path .\.gitignore  -ErrorAction Stop)
-
       - name: Download Bulma
         run: |
           $Tags = git tag | %{ $_ -replace "^v","" }
@@ -82,7 +81,6 @@ jobs:
             echo "BULMA_RELEASE=$($BulmaRelease.release)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             echo "BULMA_ARCHIVE=$($BulmaRelease.archive)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             Write-Output "download successful: $($BulmaRelease.archive)"
-            
             $path = (($pwd.Path -replace "\\","\\") + "\\assets\\bulma\\") -replace "[.]","\."
             $css = $((Get-ChildItem $path -filter "*.css" -recurse ).FullName -replace $path | %{ "  - $_"})
             $sass = $((Get-ChildItem $path -filter "*.sass").FullName -replace $path)
