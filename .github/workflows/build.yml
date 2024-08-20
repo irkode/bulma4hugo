@@ -102,6 +102,6 @@ jobs:
           # git push --tags
           git checkout main
           gh auth login
-          gh release create $BulmaRelease --title "Bulma4Hugo v$BulmaRelease" --target $bulmaBranch
+          gh release create $BulmaRelease --title "Bulma4Hugo v$BulmaRelease" --target $bulmaBranch --latest
           git branch -D $bulmaBranch
           git push origin --delete $bulmaBranch
