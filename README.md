@@ -101,7 +101,43 @@ Just follow the [Official _Bulma_ documentation](https://Bulma.io/).
 
 In general you will use [_Hugo_ Asset Management](https://gohugo.io/categories/asset-management/) to add _Bulma_ to your site.
 
-## Releases
+### Files provided in different versions
+
+Different releases of bulma provide different css/sass files to include
+
+- pre 0.6.x versions just provide `css/bulma.css`, `bulma.sass`
+
+- with 7.0 a minified CSS is provided `css/bulma.min.css`
+
+- later versiosn add special variants
+
+Consult the bulma release notes to get a list of files delivered.
+
+> keep in mind that we mount _Bulma_ to `assets/bulma` folder, so you will have to add a leading `bulma`. See examples below.
+
+### Examples
+
+- use the (minified) css file
+
+- use as any other global resource [resources.Get](https://gohugo.io/functions/resources/get/)
+
+  ```shell
+  {{ with resources.Get "bulma/css/bulma.min.css" }}
+     <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous" />
+  {{ end }}
+  ```
+
+- use the sass file
+
+  Straight from the docs at: [Asset Management - SASS](https://gohugo.io/hugo-pipes/transpile-sass-to-css/)
+
+  ```
+  {{ with resources.Get "bulma/bulma.scss" | toCSS | minify | fingerprint }}
+     <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+  {{ end }}
+  ```
+
+## Release versioning
 
 _Bulma 4 Hugo_ follows the _Bulma_ release scheme. So version numbers are same.
 
