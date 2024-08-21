@@ -83,7 +83,7 @@ jobs:
             Write-Output "download successful: $($BulmaRelease.archive)"
             $notes = @("### This release contains the following style files:`n", "- CSS`n")
             $notes += Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse | Resolve-Path -Relative | %{ "  - $_" } 
-            $notes += "`n - SASS`n "
+            $notes += "`n- SASS`n"
             $notes += Get-ChildItem -Path .\assets\bulma -filter "*.sass" | Resolve-Path -Relative  | %{ "  - $_" }
             $notes += "`nRelease details on the [official release page](https://github.com/jgthms/bulma/releases/tag/$($BulmaRelease.release))"
             $notes | Set-Content -encoding utf8 notes.md 
