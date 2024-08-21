@@ -85,6 +85,16 @@ Add _Bulma 4 Hugo_ either using plain clone or as submodule.
   git commit -m "bumped Bulma 4 Hugo to release 0.7.5"
   ```
 
+### Source archive
+
+Each release also has it's files added as `.zip` and `.tar.gz`archives attached.
+
+- Download an archive from it's Release: eg: https://github.com/irkode/bulma4hugo/archive/refs/tags/v1.0.2.zip
+- Extract the archive to your themes folder
+- rename the created `bulma4hugo-1.02`folder to `bulma`
+
+If you want to keep the version suffix, make sure to include it in your `theme` site parameter.
+
 Add the theme to your site configuration
 
 - _Hugo_.yaml
@@ -98,6 +108,8 @@ Add the theme to your site configuration
   ```toml
   theme = "bulma4hugo"
   ```
+
+If you kept the version information in the folder name when using the source variant. Use `bulma4hugo-1.0.2`
 
 ## Use _Bulma_
 
@@ -133,12 +145,24 @@ Since `Bulma 4 Hugo 0.7.6` we list the provided files in our release notes. For 
   {{ end }}
   ```
 
-- use the sass file
+- use the sass file (0.x versions)
 
   Straight from the docs at: [Asset Management - SASS](https://gohugo.io/hugo-pipes/transpile-sass-to-css/)
 
   ```
-  {{ with resources.Get "bulma/bulma.scss" | toCSS | minify | fingerprint }}
+  {{ $opts := dict "transpiler" "libsass" "targetPath" "css/bulma4hugo.css" }} {{
+   {{ with resources.Get "bulma/bulma.sass" | toCSS $opts | minify | fingerprint }}
+     <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
+  {{ end }}
+  ```
+
+- use the sass file (1.x versions)
+
+  > since Bulma 1.0.0 you need _dartsass_ to assemble. Install it and configure your _hugo pipe_ to use it
+
+  ```
+  {{ $opts := dict "transpiler" "dartsass" "targetPath" "css/bulma4hugo.css" }} {{
+  {{ with resources.Get "bulma/bulma.scss" | toCSS $opts | minify | fingerprint }}
      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
   {{ end }}
   ```
