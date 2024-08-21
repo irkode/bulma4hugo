@@ -58,18 +58,31 @@ Now add _Bulma 4 Hugo_ to your site using one of the below methods
 
 ### Git
 
-Add _Bulma 4 Hugo_ either using plain clone or as submodule
+Add _Bulma 4 Hugo_ either using plain clone or as submodule.
+
+> HINT: we have no branches for the _Bulma_ releases, just _tags_:
+>
+> Example: release `0.7.5` is tagged as `v0.7.5`
 
 - Clone
 
   ```
-  git clone https://github.com/irkode/bulma4hugo.git themes/bulma4hugo
+  git clone --depth 1 --branch v0.7.5 https://github.com/irkode/bulma4hugo.git themes/bulma4hugo
   ```
 
 - Submodule
 
+  To use a git submodule you must ofc hava a git repository for your site. If your's is not `git init .`
+
+  It's not possible add a submodule using a tag. so you will have to something like:
+
   ```
   git submodule add https://github.com/irkode/bulma4hugo.git themes/bulma4hugo
+  cd themes/bulma4hugo
+  git checkout v0.7.5
+  cd ../..
+  git add themes/bulma4hugo
+  git commit -m "bumped Bulma 4 Hugo to release 0.7.5"
   ```
 
 Add the theme to your site configuration
@@ -78,19 +91,12 @@ Add the theme to your site configuration
 
   ```yaml
   theme: bulma4hugo
-  # use array syntax if you need other themes, too
-  theme:
-    - bulma4hugo
-    - othertheme
-    ...
   ```
 
 - _Hugo_.toml
 
   ```toml
   theme = "bulma4hugo"
-  # use array syntax if you need other themes, too
-  theme = ["bulma4hugo", "othertheme", ...]
   ```
 
 ## Use _Bulma_
@@ -109,9 +115,9 @@ Different releases of bulma provide different css/sass files to include
 
 - with 7.0 a minified CSS is provided `css/bulma.min.css`
 
-- later versiosn add special variants
+- later versions may add more stuff
 
-Consult the bulma release notes to get a list of files delivered.
+Since `Bulma 4 Hugo 0.7.6` we list the provided files in our release notes. For more details on a release consult the bulma release notes.
 
 > keep in mind that we mount _Bulma_ to `assets/bulma` folder, so you will have to add a leading `bulma`. See examples below.
 
