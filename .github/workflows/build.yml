@@ -58,7 +58,7 @@ jobs:
                }
             }
           } | Sort-Object -Property release 
-           Write-Output "All BULMA Releases"
+           Write-Output "All new BULMA Releases"
            $BulmaReleases | FT | Out-Host
            $BulmaRelease = $BulmaReleases | Where-Object { -Not $_.known } | Select-Object -First 1
           if ($BulmaRelease) {
@@ -86,9 +86,11 @@ jobs:
             $BulmaPath = Join-Path -Path $pwd.Path -ChildPath "assets\bulma\"
             $path = $BulmaPath -replace "\\","\\"
             "## This release contains the following style files:\n\n- CSS\n\n" | Set-Content -encoding utf8 notes.md 
-            (Get-ChildItem -Path $BulmaPath -filter "*.css" -recurse).FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
+            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse) | Resolve-Path -Relative | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
             "\n- SASS\n\n" | Add-Content -encoding utf8 notes.md 
-            (Get-ChildItem -Path $BulmaPath -filter "*.sass").FullName -replace $path | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
+            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse) | Resolve-Path -Relative  | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md }
+            "\n More details on the offical release page\n\n" | Add-Content -encoding utf8 notes.md
+            "- [Bulma $($BulmaRelease.release)](https://github.com/jgthms/bulma/releases/tag/$($BulmaRelease.release) for details" | Add-Content -encoding utf8 notes.md
             Get-Content notes.md
           } else {
             Write-Output "No new Bulma Version found to pack"
@@ -100,8 +102,6 @@ jobs:
           Write-Host "Creating Release for $ENV:BULMA_RELEASE : $ENV:BULMA_ARCHIVE"
           $BulmaRelease = "$ENV:BULMA_RELEASE"
           $BulmaArchive = "$ENV:BULMA_ARCHIVE"
-          $cwd = ($pwd.Path -replace "\\","\\") + "\\"
-          (Get-ChildItem .).FullName -replace $cwd, ""|sort
           $bulmaBranch = "bulma-$BulmaRelease"
           git checkout -b $bulmaBranch
           git add assets .github
