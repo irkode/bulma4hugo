@@ -70,8 +70,10 @@ jobs:
             [void](New-Item -Type Directory ./assets -ErrorAction Stop)
             [void](Test-Path .\assets -PathType Container -ErrorAction Stop)
             Expand-Archive -LiteralPath $BulmaRelease.archive -DestinationPath .\assets
-            if (Test-Path .\assets\__MACOSX) { Remove-Item .\assets\__MACOSX -ErrorAction SilentlyContinue -Recurse }
-            Rename-Item .\assets\$bulmaFolder "bulma"
+            gci assets | Out-Host
+            if (Test-Path .\assets\$bulmaFolder -PathType Container) {
+               Rename-Item .\assets\$bulmaFolder "bulma"
+            }
             [void](Test-Path ./assets/bulma -PathType Container -ErrorAction Stop)
             if ((Get-ChildItem .\assets).Count -ne 1) {
                Write-Error "Unknown Bulma archive content found (expected 'bulma' only):"
@@ -99,7 +101,7 @@ jobs:
           $BulmaArchive = "$ENV:BULMA_ARCHIVE"
           $bulmaBranch = "bulma-$BulmaRelease"
           git checkout -b $bulmaBranch
-          git add assets .github
+          git add assets/bulma .github
           git commit -m "pack Bulma $BulmaRelease for Hugo"
           git push --set-upstream origin $bulmaBranch
           # git tag -a "v$BulmaRelease" -m "packed Bulma release $BulmaRelease"
