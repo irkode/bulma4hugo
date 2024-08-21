@@ -83,14 +83,11 @@ jobs:
             echo "BULMA_RELEASE=$($BulmaRelease.release)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             echo "BULMA_ARCHIVE=$($BulmaRelease.archive)" | Out-File $Env:GITHUB_ENV -Append -Encoding utf8
             Write-Output "download successful: $($BulmaRelease.archive)"
-            $BulmaPath = Join-Path -Path $pwd.Path -ChildPath "assets\bulma\"
-            $path = $BulmaPath -replace "\\","\\"
             "## This release contains the following style files:\n\n- CSS\n\n" | Set-Content -encoding utf8 notes.md 
-            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse) | Resolve-Path -Relative | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
+            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse | Resolve-Path -Relative | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md } 
             "\n- SASS\n\n" | Add-Content -encoding utf8 notes.md 
-            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse) | Resolve-Path -Relative  | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md }
-            "\n More details on the offical release page\n\n" | Add-Content -encoding utf8 notes.md
-            "- [Bulma $($BulmaRelease.release)](https://github.com/jgthms/bulma/releases/tag/$($BulmaRelease.release) for details" | Add-Content -encoding utf8 notes.md
+            Get-ChildItem -Path .\assets\bulma  -filter "*.css" -recurse | Resolve-Path -Relative  | %{ "  - $_\n" | Add-Content -encoding utf8 notes.md }
+            "\n More details on the [official release page](https://github.com/jgthms/bulma/releases/tag/$($BulmaRelease.release)\n" | Add-Content -encoding utf8 notes.md
             Get-Content notes.md
           } else {
             Write-Output "No new Bulma Version found to pack"
