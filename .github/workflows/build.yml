@@ -105,6 +105,6 @@ jobs:
           # git tag -a "v$BulmaRelease" -m "packed Bulma release $BulmaRelease"
           # git push --tags
           git checkout main
-          gh release create "v$BulmaRelease" --title "Bulma4Hugo v$BulmaRelease" --target $bulmaBranch --latest
+          gh release create "v$BulmaRelease" --title "Bulma4Hugo v$BulmaRelease" --target $bulmaBranch --latest --notes-file notes.md
           git branch -D $bulmaBranch
           git push origin --delete $bulmaBranch
