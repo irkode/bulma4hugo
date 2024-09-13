@@ -150,7 +150,7 @@ Since `Bulma 4 Hugo 0.7.6` we list the provided files in our release notes. For 
   Straight from the docs at: [Asset Management - SASS](https://gohugo.io/hugo-pipes/transpile-sass-to-css/)
 
   ```
-  {{ $opts := dict "transpiler" "libsass" "targetPath" "css/bulma4hugo.css" }} {{
+  {{ $opts := dict "transpiler" "libsass" "targetPath" "css/bulma4hugo.css" }}
    {{ with resources.Get "bulma/bulma.sass" | toCSS $opts | minify | fingerprint }}
      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
   {{ end }}
@@ -161,7 +161,7 @@ Since `Bulma 4 Hugo 0.7.6` we list the provided files in our release notes. For 
   > since Bulma 1.0.0 you need _dartsass_ to assemble. Install it and configure your _hugo pipe_ to use it
 
   ```
-  {{ $opts := dict "transpiler" "dartsass" "targetPath" "css/bulma4hugo.css" }} {{
+  {{ $opts := dict "transpiler" "dartsass" "targetPath" "css/bulma4hugo.css" }}
   {{ with resources.Get "bulma/bulma.scss" | toCSS $opts | minify | fingerprint }}
      <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
   {{ end }}
