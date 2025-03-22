@@ -147,7 +147,7 @@ Since `Bulma 4 Hugo 0.7.6` we list the provided files in our release notes. For 
 
 - use the sass file (0.x versions)
 
-  Straight from the docs at: [Asset Management - SASS](https://gohugo.io/hugo-pipes/transpile-sass-to-css/)
+  Straight from the docs at: [Transpiles Sass to CSS.](https://gohugo.io/functions/css/sass/)
 
   ```
   {{ $opts := dict "transpiler" "libsass" "targetPath" "css/bulma4hugo.css" }}
